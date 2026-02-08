@@ -24,11 +24,11 @@ npm i subdomain-generator
 import generateSubdomain from "subdomain-generator";
 
 console.log(generateSubdomain());
-// => "otter-9k2m1x0qz8a3"
+// otter-9k2m1x0qz8a3
 
 console.log(generateSubdomain({ suffixLength: 16 }));
-// => "alpaca-0m3k...<16 chars>"
+// alpaca-0m3k...<16 chars>
 
 console.log(generateSubdomain({ separator: "_" }));
-// => "giraffe_9k2m1x0qz8a3"
+// giraffe_9k2m1x0qz8a3
 ```
