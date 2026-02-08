@@ -1,5 +1,5 @@
 {
-  "name": "subdomain-animal-generator",
+  "name": "subdomain-generator",
   "version": "1.0.0",
   "type": "module",
   "description": "Secure random subdomain generator without dependencies",
