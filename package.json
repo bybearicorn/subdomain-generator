@@ -2,11 +2,15 @@
   "name": "subdomain-animal-generator",
   "version": "1.0.0",
   "type": "module",
+  "description": "Secure random subdomain generator without dependencies",
   "bin": {
     "keygen": "./index.js"
   },
-  "scripts": {
-    "subdomain-animal-generator": "subdomain-animal-generator",
-    "test": "node ./tests/test.js"
+  "exports": {
+    ".": "./index.js"
+  },
+  "main": "./index.js",
+  "engines": {
+    "node": ">=16"
   }
 }

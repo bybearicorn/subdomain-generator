@@ -1,28 +1,65 @@
-const animals = [
-  "aardvark","albatross","alligator","alpaca","anaconda","anchovy","angelfish","ant","anteater","antelope",
-  "ape","armadillo","axolotl","baboon","badger","bandicoot","barnacle","barracuda","bat","bear",
-  "beaver","bee","beetle","bison","boar","bobcat","bonobo","buffalo","bull","butterfly",
-  "buzzard","camel","canary","capybara","caracal","caribou","cassowary","cat","caterpillar","catfish",
-  "cattle","centipede","chameleon","cheetah","chicken","chimpanzee","chinchilla","clam","clownfish","cobra",
-  "cockatoo","cockroach","cod","condor","coral","cougar","cow","coyote","crab","crane",
-  "crayfish","crocodile","crow","deer","dingo","dog","dolphin","donkey","dormouse","dove",
-  "dragonfly","duck","eagle","earthworm","echidna","eel","egret","elephant","elk","emu",
-  "falcon","ferret","finch","firefly","fish","flamingo","flea","fly","fox","frog",
-  "gazelle","gecko","gerbil","gibbon","giraffe","goat","goldfish","goose","gorilla","grasshopper",
-  "grouse","guineapig","gull","hamster","hare","hawk","hedgehog","heron","herring","hippopotamus",
-  "horse","hummingbird","hyena","ibex","ibis","iguana","impala","jackal","jaguar","jellyfish",
-  "kangaroo","kingfisher","kiwi","koala","koi","krill","ladybug","lamprey","lemming","lemur",
-  "leopard","lion","lizard","llama","lobster","locust","loris","lynx","macaw","mackerel",
-  "magpie","manatee","mandrill","manta","marmoset","marmot","meerkat","millipede","mink","minnow",
-  "mole","mongoose","monkey","moose","mosquito","moth","mouse","mule","narwhal","newt",
-  "nightjar","nightingale","octopus","okapi","opossum","orangutan","orca","ostrich","otter","owl",
-  "ox","oyster","panda","pangolin","panther","parrot","partridge","peacock","pelican","penguin",
-  "pheasant","pig","pigeon","pike","platypus","pony","porcupine","porpoise","prawn","puffin",
-  "puma","python","quail","rabbit","raccoon","rat","raven","reindeer","rhinoceros","robin",
-  "rooster","salamander","salmon","sandpiper","scorpion","seahorse","seal","shark","sheep","shrew",
-  "shrimp","skink","skunk","sloth","slug","snail","snake","sparrow","spider","squid",
-  "squirrel","starfish","stingray","stoat","stork","swan","tapir","tarantula","termite","tern",
-  "tiger","toad","trout","tuna","turkey","turtle","urchin","viper","vole","vulture",
-  "wallaby","walrus","wasp","weasel","whale","wolf","wolverine","wombat","woodcock","woodpecker",
-  "worm","wren","yak","zebra","zorilla"
-];
+import { dictionary } from "./dictionary.js";
+
+const CHARS = "abcdefghijklmnopqrstuvwxyz0123456789";
+const CHAR_LEN = CHARS.length;
+
+function getCryptoObj() {
+  // browser: globalThis.crypto
+  // node: global crypto (Node 19+) or require("crypto").webcrypto (Node 15+)
+  const g = typeof globalThis !== "undefined" ? globalThis : undefined;
+
+  if (g && g.crypto && typeof g.crypto.getRandomValues === "function") {
+    return g.crypto;
+  }
+
+  // node fallback
+  try {
+    const nodeCrypto = require("crypto");
+    if (nodeCrypto.webcrypto && typeof nodeCrypto.webcrypto.getRandomValues === "function") {
+      return nodeCrypto.webcrypto;
+    }
+  } catch (_) {}
+
+  return null;
+}
+
+const cryptoObj = getCryptoObj();
+
+function secureUint32() {
+  if (cryptoObj) {
+    const a = new Uint32Array(1);
+    cryptoObj.getRandomValues(a);
+    return a[0];
+  }
+
+  // fallback (NOT cryptographically secure)
+  return (Math.random() * 0x100000000) >>> 0;
+}
+
+function randomInt(maxExclusive) {
+  if (maxExclusive <= 0) throw new Error("maxExclusive must be > 0");
+
+  const limit = Math.floor(0x100000000 / maxExclusive) * maxExclusive;
+
+  let x;
+  do {
+    x = secureUint32();
+  } while (x >= limit);
+
+  return x % maxExclusive;
+}
+
+function randomLetters(length = 12) {
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += CHARS[randomInt(CHAR_LEN)];
+  }
+  return result;
+}
+
+export default function generateSubdomain(options = {}) {
+  const { suffixLength = 12, separator = "-" } = options;
+
+  const word = dictionary[randomInt(dictionary.length)];
+  return `${word}${separator}${randomLetters(suffixLength)}`;
+}
