@@ -1,0 +1,12 @@
+{
+  "name": "subdomain-animal-generator",
+  "version": "1.0.0",
+  "type": "module",
+  "bin": {
+    "keygen": "./index.js"
+  },
+  "scripts": {
+    "subdomain-animal-generator": "subdomain-animal-generator",
+    "test": "node ./tests/test.js"
+  }
+}
