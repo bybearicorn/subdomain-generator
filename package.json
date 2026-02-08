@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Secure random subdomain generator without dependencies",
-  "bin": {
-    "keygen": "./index.js"
-  },
   "exports": {
     ".": "./index.js"
   },

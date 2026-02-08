@@ -3,36 +3,29 @@ import { dictionary } from "./dictionary.js";
 const CHARS = "abcdefghijklmnopqrstuvwxyz0123456789";
 const CHAR_LEN = CHARS.length;
 
-function getCryptoObj() {
-  // browser: globalThis.crypto
-  // node: global crypto (Node 19+) or require("crypto").webcrypto (Node 15+)
+async function getCryptoObj() {
   const g = typeof globalThis !== "undefined" ? globalThis : undefined;
 
-  if (g && g.crypto && typeof g.crypto.getRandomValues === "function") {
-    return g.crypto;
-  }
+  if (g?.crypto?.getRandomValues) return g.crypto;
 
-  // node fallback
+  // Node ESM: built-in module
   try {
-    const nodeCrypto = require("crypto");
-    if (nodeCrypto.webcrypto && typeof nodeCrypto.webcrypto.getRandomValues === "function") {
-      return nodeCrypto.webcrypto;
-    }
-  } catch (_) {}
+    const nodeCrypto = await import("node:crypto");
+    if (nodeCrypto.webcrypto?.getRandomValues) return nodeCrypto.webcrypto;
+  } catch {}
 
   return null;
 }
 
-const cryptoObj = getCryptoObj();
+const cryptoObjPromise = getCryptoObj();
 
-function secureUint32() {
+async function secureUint32() {
+  const cryptoObj = await cryptoObjPromise;
   if (cryptoObj) {
     const a = new Uint32Array(1);
     cryptoObj.getRandomValues(a);
     return a[0];
   }
-
-  // fallback (NOT cryptographically secure)
   return (Math.random() * 0x100000000) >>> 0;
 }
 
